@@ -1,3 +1,19 @@
+:ruby
+  scope_field_value = params[:scope_field_value]
+
+= form_tag(nestable_path(params.except(*%w[scope])), method: :get, class: "pjax-form form-inline") do
+  .well
+    %span#filters_box
+    %hr.filters_box{style: "display:#{ordered_filters.empty? ? 'none' : 'block'}"}
+    .input-group
+      %input.form-control.input-small{name: "scope_field_value", type: "search", value: scope_field_value, placeholder: t("admin.misc.filter")}
+      %span.input-group-btn
+        %button.btn.btn-primary{type: 'submit', :'data-disable-with' => '<i class="icon-white icon-refresh"></i> '.html_safe + t('admin.misc.refresh')}
+          %i.icon-white.icon-refresh
+          = t('admin.misc.refresh')
+        %button#remove_filter.btn.btn-info{title: "Reset filters"}
+          %i.icon-white.icon-remove
+
 #rails_admin_nestable
   - if [false, :only].exclude?(@options[:live_update])
     .form-group
