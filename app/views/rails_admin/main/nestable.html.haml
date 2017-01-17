@@ -1,33 +1,46 @@
 :ruby
   scope_field_value = params[:scope_field_value]
+  source_abstract_model = @abstract_model #RailsAdmin.config(form.object.class).abstract_model
+  #field = @abstract_model.fields[:product_id]
+  collection = [1,2]
+
+  #xhr = !field.associated_collection_cache_all
 
 = form_tag(nestable_path(params.except(*%w[scope])), method: :get, class: "pjax-form form-inline") do
   .well
-    %span#filters_box
-    %hr.filters_box{style: "display:#{ordered_filters.empty? ? 'none' : 'block'}"}
-    .input-group
-      %input.form-control.input-small{name: "scope_field_value", type: "search", value: scope_field_value, placeholder: t("admin.misc.filter")}
-      %span.input-group-btn
-        %button.btn.btn-primary{type: 'submit', :'data-disable-with' => '<i class="icon-white icon-refresh"></i> '.html_safe + t('admin.misc.refresh')}
-          %i.icon-white.icon-refresh
-          = t('admin.misc.refresh')
-        %button#remove_filter.btn.btn-info{title: "Reset filters"}
-          %i.icon-white.icon-remove
+    -#= select_tag "specification[prodict_id]", options_for_select: collection, include_empty: true
 
-#rails_admin_nestable
-  - if [false, :only].exclude?(@options[:live_update])
+
+    -#%select{ data: {filteringselect: true, options: "{&quot;xhr&quot;:false,&quot;remote_source&quot;:&quot;/admin/product?associated_collection=product\u0026compact=true\u0026current_action=create\u0026source_abstract_model=specification&quot;}" }, placeholder: "Suchen", required: "required", name: "specification[product_id]", id: "specification_product_id", style: "display: none;" }
+      -#%option
+
+    <select data-filteringselect="true" data-options="{&quot;xhr&quot;:false,&quot;remote_source&quot;:&quot;/admin/product?associated_collection=product\u0026compact=true\u0026current_action=create\u0026source_abstract_model=specification&quot;}" placeholder="Suchen" required="required" name="scope_field_value" id="specification_product_id" style="display: none;" onchange="this.form.submit();"><option value=""></option>
+    <option value="2">Caterpillar 4K</option>
+    <option value="1">Caterpillar 4H</option></select>
+    <div class="input-group filtering-select col-sm-2" data-input-for="specification_product_id" style="float: left;"><input type="text" class="form-control ra-filtering-select-input ui-autocomplete-input" style="display: inline-block;" placeholder="Suchen" autocomplete="off"><span class="input-group-btn"><label class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="Show All Items" role="button"><span class="caret"></span><span class="ui-button-text">&nbsp;</span></label></span></div>
+
+    -#%span.input-group-btn
+      -#%button.btn.btn-primary{type: 'submit', :'data-disable-with' => '<i class="icon-white icon-refresh"></i> '.html_safe + t('admin.misc.refresh')}
+        -#%i.icon-white.icon-refresh
+        -#= t('admin.misc.refresh')
+      -#%button#remove_filter.btn.btn-info{title: "Reset filters"}
+        -#%i.icon-white.icon-remove
+
+- if scope_field_value.present?
+  #rails_admin_nestable
+    - if [false, :only].exclude?(@options[:live_update])
+      .form-group
+        .checkbox
+          %label
+            = check_box_tag 'rails_admin_nestable_live_update'
+            = t('admin.actions.nestable.live_update')
     .form-group
-      .checkbox
-        %label
-          = check_box_tag 'rails_admin_nestable_live_update'
-          = t('admin.actions.nestable.live_update')
-  .form-group
-    #tree_nodes.dd{ data: { update_path: nestable_path(model_name: @abstract_model), max_depth: tree_max_depth } }
-      %ol.dd-list
-        = nested_tree_nodes @tree_nodes
-  - if @options[:live_update] != :only
-    .form-group
-      %button.btn.btn-primary{ type: 'submit' }= t('admin.actions.nestable.update')
+      #tree_nodes.dd{ data: { update_path: nestable_path(model_name: @abstract_model), max_depth: tree_max_depth } }
+        %ol.dd-list
+          = nested_tree_nodes @tree_nodes
+    - if @options[:live_update] != :only
+      .form-group
+        %button.btn.btn-primary{ type: 'submit' }= t('admin.actions.nestable.update')
 
 = stylesheet_link_tag    'rails_admin/rails_admin_nestable'
 = javascript_include_tag 'rails_admin/jquery.nestable'
