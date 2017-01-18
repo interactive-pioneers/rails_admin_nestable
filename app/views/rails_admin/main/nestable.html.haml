@@ -1,24 +1,27 @@
 :ruby
-  scope_assoc_value = params[:scope_assoc_value]
-  collection = @abstract_model.model.all.collect{ |m| m.send(@options[:scope_assoc]) }.uniq
-  scope_assoc_value_name = @abstract_model.model.find_by_product_id(scope_assoc_value).product.name if scope_assoc_value.present?
+  if @options[:scope_assoc]
+    scope_assoc_value = params[:scope_assoc_value]
+    collection = @abstract_model.model.all.collect{ |m| m.send(@options[:scope_assoc]) }.uniq
+    scope_assoc_value_name = @abstract_model.model.find_by_product_id(scope_assoc_value).product.name if scope_assoc_value.present?
+  end
 
-= form_tag(nestable_path(params.except(*%w[scope])), method: :get, class: "pjax-form form-inline") do
-  .well
-    %span.input-group-btn
-      = select_tag "scope_assoc_value", options_from_collection_for_select(collection, :id, :name, scope_assoc_value), include_blank: true, placeholder: "Suchen", required: "required", id: "specification_product_id", style: "display: none;", onchange: "$(this).closest('form').submit();", data: { filteringselect: true }
-      .input-group.filtering-select.col-sm2{ data: { input_for: "specification_product_id" }, style: "float: left;" }
-        %input.form-control.ra-filtering-select-input.ui-autocomplete-input{ style: "display: inline-block;", placeholder: "Suchen", autocomplete: "off", value: scope_assoc_value_name }
-        %span.input-group-btn
-          %label.btn.btn-info.dropdown-toggle{ data: { toggle: "dropdown" }, "aria-expanded": false, title: "Show All Items", role: "button" }
-            %span.caret
-            %span.ui-button-text= " "
-      -# FIXME: reset dysfunctional.
-      -#%span.input-group-btn
-        -#%button.btn.btn-info{title: "Reset filters"}
-          -#%i.icon-white.icon-remove
+- if collection.present?
+  = form_tag(nestable_path(params.except(*%w[scope])), method: :get, class: "pjax-form form-inline") do
+    .well
+      %span.input-group-btn
+        = select_tag "scope_assoc_value", options_from_collection_for_select(collection, :id, :name, scope_assoc_value), include_blank: true, placeholder: "Suchen", required: "required", id: "specification_product_id", style: "display: none;", onchange: "$(this).closest('form').submit();", data: { filteringselect: true }
+        .input-group.filtering-select.col-sm2{ data: { input_for: "specification_product_id" }, style: "float: left;" }
+          %input.form-control.ra-filtering-select-input.ui-autocomplete-input{ style: "display: inline-block;", placeholder: "Suchen", autocomplete: "off", value: scope_assoc_value_name }
+          %span.input-group-btn
+            %label.btn.btn-info.dropdown-toggle{ data: { toggle: "dropdown" }, "aria-expanded": false, title: "Show All Items", role: "button" }
+              %span.caret
+              %span.ui-button-text= " "
+        -# FIXME: reset dysfunctional.
+        -#%span.input-group-btn
+          -#%button.btn.btn-info{title: "Reset filters"}
+            -#%i.icon-white.icon-remove
 
-- if scope_assoc_value.present?
+- if !@options[:scope_assoc] || scope_assoc_value.present?
   #rails_admin_nestable
     - if [false, :only].exclude?(@options[:live_update])
       .form-group
