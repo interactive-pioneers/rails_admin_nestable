@@ -68,13 +68,13 @@ module RailsAdmin
 
             if request.get?
               query = list_entries(@model_config, :nestable, false, false).reorder(nil)
-              scope_field_value = request.params[:scope_field_value]
+              scope_assoc_value = request.params[:scope_assoc_value]
 
               case @options[:scope].class.to_s
                 when 'Proc'
-                  query.merge!(@options[:scope].call(scope_field_value))
+                  query.merge!(@options[:scope].call(scope_assoc_value))
                 when 'Symbol'
-                  query.merge!(@abstract_model.model.public_send(@options[:scope], scope_field_value))
+                  query.merge!(@abstract_model.model.public_send(@options[:scope], scope_assoc_value))
               end
 
               if @nestable_conf.tree?
